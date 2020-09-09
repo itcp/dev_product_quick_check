@@ -41,6 +41,11 @@
 ````
 cd sitename/							# 进入项目目录
 python manage.py runserver 0.0.0.0：8000		# 启动
+
+数据库变更
+
+python3 manage.py makemigrations # 生成变更程序
+python3 manage.py migrate		# 执行变更，同步数据模型
 ````
 
 
@@ -257,6 +262,8 @@ def siwView(request):
 在 sitename/urls.py先导入app01的urls
 
 ```python
+from django.urls import path
+from django.conf.urls import include 
 from app01 import urls as app01_urls
 
 urlpatterns = [
@@ -272,9 +279,7 @@ urlpatterns = [
   
   ```
 
-  ** Django 1.x中有url()和path()函数，Django2. 开始 path()和re_path()
-
-  
+  ** Django 1.x中有url()和path()函数，Django2. 开始使用 path()和re_path()，re_path() 是和url()一样，还要用正则语法的
 
 
 
@@ -283,7 +288,86 @@ urlpatterns = [
 
 
 - 调试方法
+  
   - print('xxx')   要在终端中看打印的信息，浏览器看不到
+  
+    
+
+
+
+常用模板
+
+```python
+from django.shortcuts import render
+from vip import models
+# Create your views here.
+
+def recharge(request):
+    if request.method == 'GET':
+		number = request.GET['number']
+        return render(request, 'recharge.html')
+
+    elif request.method == 'POST':
+        response = {'status': 0}
+        type = request.POST['type']
+        return HttpResponse(json.dumps(response))
+```
+
+
+
+获取用户信息
+
+```python
+
+```
+
+
+
+
+
+数据库操作
+
+创建和更新方式有save和objects.create、objects.update模式
+
+用objects 模式可返回更改的数据
+
+```python
+写入保存
+>>> b3 = Blog(name='Cheddar Talk', tagline='Thoughts on cheese.')
+>>> b3.save()
+>>> b3.id     # Returns 3.返回id
+
+查询
+>>> from django.db.models import F
+>>> product = Product.objects.get(name='Venezuelan Beaver Cheese') # 返回第一条或唯一
+
+ # 返回多条
+Article.objects.filter(name="sre") 
+# 匹配，like，大小写敏感，对应SQL：select * from Article where name like '%sre%'，SQL中大小写不敏感
+Article.objects.filter(name__contains="sre")
+# 匹配，like，大小写不敏感，对应SQL：select * from Article where name like '%sre%'，SQL中大小写不敏感
+Article.objects.filter(name__icontains="sre")
+
+
+# 更多请看  https://www.django.cn/course/show-18.html
+
+
+更新
+>>> from django.db.models import F
+>>> product = Product.objects.get(name='Venezuelan Beaver Cheese')
+>>> product.number_sold = F('number_sold') + 1
+>>> product.save()
+
+    #把标题'增加标题二'，修改成'我被修改了'。将指定条件的数据更新，支持 **kwargs，支持字典。
+    title = models.Article.objects.filter(title='增加标题二').update(title='我被修改了')
+    return HttpResponse('orm')
+
+删除，但我的项目不建议用删除，更保守的方式是model中设计一个字段为开启可查看
+title = models.Article.objects.filter(id=6).delete()
+
+```
+
+
 
 
 
@@ -297,7 +381,39 @@ urlpatterns = [
 
 
 
+```python
 
+```
+
+
+
+# 用户身份
+
+参考：
+
+https://www.django.cn/article/show-18.html
+
+https://developer.mozilla.org/zh-CN/docs/learn/Server-side/Django/Authentication
+
+
+
+用户模型
+
+https://blog.csdn.net/weixin_42134789/article/details/80207322
+
+
+
+获得当前用户信息
+
+```python
+def sample_view(request):
+    current_user = request.user
+    print current_user.id
+    
+# 
+request.user.id
+request.user.username
+```
 
 
 
