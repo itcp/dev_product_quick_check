@@ -74,8 +74,6 @@ INSTALLED_APPS = [
 
 
 
-
-
 # 二、配置与全局
 
 
@@ -323,6 +321,34 @@ def recharge(request):
 
 
 
+获取请求数据
+
+
+
+```python
+# 平时一般提交
+request.GET['username']
+request.POST['username']
+# 使用json格式提交
+theReq = json.loads(request.POST)
+theReq['username']
+```
+
+
+
+返回响应
+
+```python 
+
+
+# json格式响应
+return HttpResponse(json.dumps(response))
+```
+
+
+
+
+
 
 
 数据库操作
@@ -382,8 +408,45 @@ title = models.Article.objects.filter(id=6).delete()
 
 
 ```python
+创建和变更
+
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+
+
+
+批量数据操作
+
+
+
+批量创建
+
+```python3
+from django.db import models
+
+class Product(models.Model):
+    name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+product_list_to_insert = list()
+for x in range(10):
+    product_list_to_insert.append(Product(name='product name ' + str(x), price=x))
+Product.objects.bulk_create(product_list_to_insert)
+# 或者
+Product.objects.bulk_create([
+	Product(name = 'product name 1', price = 1),
+	Product(name = 'product name 2', price = 2),
+	...
+])
 
 ```
+
+
+
+### 事务
+
+
 
 
 
