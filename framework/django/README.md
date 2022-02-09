@@ -231,6 +231,14 @@ def siwView(request):
 
 
 
+读取配置参数
+
+```python
+from django.conf import settings
+
+print(settings.IP_LOCAL)
+```
+
 
 
 
@@ -373,7 +381,8 @@ Article.objects.filter(name="sre")
 Article.objects.filter(name__contains="sre")
 # 匹配，like，大小写不敏感，对应SQL：select * from Article where name like '%sre%'，SQL中大小写不敏感
 Article.objects.filter(name__icontains="sre")
-
+# 返回指定字段
+Article.objects.values('id', 'name').filter(name="sre") 
 
 # 更多请看  https://www.django.cn/course/show-18.html
 
